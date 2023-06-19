@@ -91,9 +91,9 @@ end
 function cmdAvest()
     ActivateAvest = not ActivateAvest
     if ActivateAvest then
-        sampAddChatMessage("{33CCFF}AutoVest {FFFFFF}has been Activated.")
+        sampAddChatMessage("{33CCFF}[AutoVest]: {FFFFFF}has been Activated.")
     else
-        sampAddChatMessage("{33CCFF}AutoVest {FFFFFF}has been Disabled.")
+        sampAddChatMessage("{33CCFF}[AutoVest]: {FFFFFF}has been Disabled.")
     end
 end
 
