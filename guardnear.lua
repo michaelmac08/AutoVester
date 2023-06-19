@@ -81,7 +81,7 @@ function get_distance_to_player(playerId)
 end
 
 function GangSkins(playerId)
-    local gangSkins = {49, 193, 210, 228, 263, 122, 186, 123, 0, 270, 269, 271, 106, 195}
+    local gangSkins = {49, 193, 210, 228, 263, 122, 186, 123, 0, 270, 269, 271, 106, 195, 190, 19, 144, 170, 180, 160, 67, 219, 3, 93, 147, 98, 305, 150, 295, 234, 107, 119}
     local result, ped = sampGetCharHandleBySampPlayerId(playerId)
     if result then
         local playerModel = getCharModel(ped)
