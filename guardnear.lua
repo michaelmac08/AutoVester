@@ -12,38 +12,28 @@ function main()
         return
     end
     while not isSampAvailable() do
-        wait(100)
+        wait(250)
     end
     sampAddChatMessage("{33CCFF}[AutoVest] {FFFFFF}Loading the script... {33CCFF}[/avhelp]", -1)
     sampRegisterChatCommand("av", cmdServerMsg)
     sampRegisterChatCommand("avest", cmdAvest)
     sampRegisterChatCommand("avhelp", cmdAvHelp)
+    ActivateAvest = true
     while true do
         wait(100)
         playerid = getClosestPlayerId(7, true)
         if sampIsPlayerConnected(playerid) and ActivateAvest then
             local currentTime = os.clock()
             if currentTime - lastGuardTime >= 11.2 then
-                if GangSkins(playerid) then
-                    sampSendChat(string.format("/guard %d 200", playerid))
-                    lastGuardTime = currentTime
-                end
+                sampSendChat(string.format("/guard %d 200", playerid))
+                lastGuardTime = currentTime
             end
         end
     end
 end
 
-function isKeyControlAvailable()
-    if not isSampLoaded() then
-        return true
-    end
-    if not isSampfuncsLoaded() then
-        return not sampIsChatInputActive() and not sampIsDialogActive()
-    end
-    return not sampIsChatInputActive() and not sampIsDialogActive() and not isSampfuncsConsoleActive()
-end
-
 function getClosestPlayerId(maxdist, ArmorCheck)
+    local GangSkins = {49, 193, 210, 228, 263, 122, 186, 123, 0, 270, 269, 271, 106, 195, 190, 19, 144, 170, 180, 160, 67, 219, 3, 93, 147, 98, 305, 150, 295, 234, 107, 119}
     local i = -1
     local maxplayerid = sampGetMaxPlayerId(false)
     for i = 0, maxplayerid do
@@ -53,7 +43,7 @@ function getClosestPlayerId(maxdist, ArmorCheck)
                 local dist = get_distance_to_player(i)
                 if dist < maxdist then
                     if ArmorCheck then
-                        if sampGetPlayerArmor(i) < 48 then
+                        if sampGetPlayerArmor(i) < 48 and has_value(GangSkins, getCharModel(ped)) then
                             return i
                         end
                     else
@@ -78,20 +68,6 @@ function get_distance_to_player(playerId)
         end
     end
     return dist
-end
-
-function GangSkins(playerId)
-    local gangSkins = {49, 193, 210, 228, 263, 122, 186, 123, 0, 270, 269, 271, 106, 195, 190, 19, 144, 170, 180, 160, 67, 219, 3, 93, 147, 98, 305, 150, 295, 234, 107, 119}
-    local result, ped = sampGetCharHandleBySampPlayerId(playerId)
-    if result then
-        local playerModel = getCharModel(ped)
-        for i = 1, #gangSkins do
-            if playerModel == gangSkins[i] then
-                return true
-            end
-        end
-    end
-    return false
 end
 
 function cmdServerMsg()
@@ -129,4 +105,13 @@ function q.onServerMessage(c, s)
     if string.find(s, "wants to protect you for $200, type /accept bodyguard to accept.") and ActivateServerMsg then
         sampSendChat("/accept bodyguard")
     end
+end
+
+function has_value(tab, val)
+    for index, value in ipairs(tab) do
+        if value == val then
+            return true
+        end
+    end
+    return false
 end
