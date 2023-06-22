@@ -1,6 +1,5 @@
 require "lib.moonloader"
 require "lib.sampfuncs"
-local inicfg = require "inicfg"
 local q = require 'lib.samp.events'
 
 local ActivateServerMsg = false -- Initialize ActivateServerMsg variable
