@@ -2,7 +2,7 @@ require "lib.moonloader"
 require "lib.sampfuncs"
 local q = require 'lib.samp.events'
 
-local ActivateServerMsg = false
+local ActivateAv = false
 local ActivateAvest = false
 local lastGuardTime = 0
 
@@ -14,7 +14,7 @@ function main()
         wait(250)
     end
     sampAddChatMessage("{33CCFF}[AutoVest] {FFFFFF}Loading the script... {33CCFF}[/avhelp]", -1)
-    sampRegisterChatCommand("av", cmdServerMsg)
+    sampRegisterChatCommand("av", cmdAv)
     sampRegisterChatCommand("avest", cmdAvest)
     sampRegisterChatCommand("avhelp", cmdAvHelp)
     ActivateAvest = true
@@ -69,14 +69,14 @@ function get_distance_to_player(playerId)
     return dist
 end
 
-function cmdServerMsg()
-    ActivateServerMsg = not ActivateServerMsg
-    if ActivateServerMsg then
+function cmdAv()
+    ActivateAv = not ActivateAv
+    if ActivateAv then
         sampAddChatMessage("{33CCFF}Auto Accept Vest {FFFFFF}has been activated.")
     else
         sampAddChatMessage("{33CCFF}Auto Accept Vest {FFFFFF}has been disabled.")
     end
-    if ActivateServerMsg then
+    if ActivateAv then
         q.onServerMessage = function(c, s)
             if string.find(s, "wants to protect you for $200, type /accept bodyguard to accept.") then
                 sampSendChat("/accept bodyguard")
@@ -101,7 +101,7 @@ function cmdAvHelp()
 end
 
 function q.onServerMessage(c, s)
-    if string.find(s, "wants to protect you for $200, type /accept bodyguard to accept.") and ActivateServerMsg then
+    if string.find(s, "wants to protect you for $200, type /accept bodyguard to accept.") and ActivateAv then
         sampSendChat("/accept bodyguard")
     end
 end
