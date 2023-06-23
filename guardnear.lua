@@ -97,7 +97,7 @@ function cmdAvest()
 end
 
 function cmdAvHelp()
-    sampShowDialog(69, "{33CCFF}AutoVest", "{FFFFFF}AutoVest is a mod that automatically offers the player a vest when their current armor falls below a certain threshold.\n/av - Toggle Auto Accept Vest.\n/avest - Toggle AutoVest.", "Close")
+    sampShowDialog(69, "{33CCFF}AutoVest", "{FFFFFF}/av - Toggle Auto Accept Vest.\n/avest - Toggle AutoVest.", "Close")
 end
 
 function q.onServerMessage(c, s)
