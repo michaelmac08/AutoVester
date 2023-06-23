@@ -2,9 +2,9 @@ require "lib.moonloader"
 require "lib.sampfuncs"
 local q = require 'lib.samp.events'
 
-local ActivateServerMsg = false -- Initialize ActivateServerMsg variable
-local ActivateAvest = false -- Initialize ActivateAvest variable
-local lastGuardTime = 0 -- Variable to store the last time "/guard" command was sent
+local ActivateServerMsg = false
+local ActivateAvest = false
+local lastGuardTime = 0
 
 function main()
     if not isSampLoaded() or not isSampfuncsLoaded() then
@@ -32,7 +32,7 @@ function main()
 end
 
 function getClosestPlayerId(maxdist, ArmorCheck)
-    local GangSkins = {49, 193, 210, 228, 263, 122, 186, 123, 0, 270, 269, 271, 106, 195, 190, 19, 144, 170, 180, 160, 67, 219, 3, 93, 147, 98, 305, 150, 295, 234, 107, 119}
+    local GangSkins = {49, 193, 210, 228, 263, 122, 186, 123, 0, 270, 269, 271, 106, 195, 190, 19, 144, 170, 180, 160, 67, 219, 3, 93, 147, 98, 305, 150, 295, 234, 107, 119, 293}
     local i = -1
     local maxplayerid = sampGetMaxPlayerId(false)
     for i = 0, maxplayerid do
