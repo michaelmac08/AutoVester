@@ -1,3 +1,7 @@
+script_name("guardnear")
+script_author("Random")
+script_version("2.0.0")
+
 require "lib.moonloader"
 require "lib.sampfuncs"
 local q = require 'lib.samp.events'
@@ -11,7 +15,7 @@ function main()
         return
     end
     while not isSampAvailable() do
-        wait(250)
+        wait(100)
     end
     sampAddChatMessage("{901A00}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GSF {FFFFFF}| {1E90FF}[Autovest]: {FFFFFF}Succesfully loaded!", -1)
     sampRegisterChatCommand("av", cmdAv)
