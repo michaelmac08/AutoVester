@@ -72,9 +72,9 @@ end
 function cmdAv()
     ActivateAv = not ActivateAv
     if ActivateAv then
-        sampAddChatMessage("{901A00}Yak {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}BH {FFFFFF}| {006400}GSF {FFFFFF}|{1E90FF}[Autovest]: {FFFFFF}Auto Accept Vest has been Enabled")
+        sampAddChatMessage("{1E90FF}[Autovest]: {FFFFFF}Auto accept vest has been Enabled")
     else
-        sampAddChatMessage("{901A00}Yak {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}BH {FFFFFF}| {006400}GSF {FFFFFF}|{1E90FF}[Autovest]: {FFFFFF}Auto Accept Vest has been Disabled")
+        sampAddChatMessage("{1E90FF}[Autovest]: {FFFFFF}Auto accept vest has been Disabled")
     end
     if ActivateAv then
         q.onServerMessage = function(c, s)
