@@ -13,7 +13,7 @@ function main()
     while not isSampAvailable() do
         wait(250)
     end
-    sampAddChatMessage("{901A00}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GST {FFFFFF}| {1E90FF}[Autovest]: {FFFFFF}Succesfully loaded!", -1)
+    sampAddChatMessage("{901A00}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GST {FFFFFF}| {1E90FF}[Autovest]: {FFFFFF}Succesfully loaded{1E90FF}!", -1)
     sampRegisterChatCommand("av", cmdAv)
     sampRegisterChatCommand("avest", cmdAvest)
     sampRegisterChatCommand("avhelp", cmdAvHelp)
@@ -72,9 +72,9 @@ end
 function cmdAv()
     ActivateAv = not ActivateAv
     if ActivateAv then
-        sampAddChatMessage("{901A00}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GST {FFFFFF}| {1E90FF}[Autovest]: {FFFFFF}Auto Accept Vest has been Enabled")
+        sampAddChatMessage("{901A00}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GST {FFFFFF}| {1E90FF}[Autovest]: {FFFFFF}Auto Accept Vest has been Enabled{1E90FF}.")
     else
-        sampAddChatMessage("{901A00}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GST {FFFFFF}| {1E90FF}[Autovest]: {FFFFFF}Auto Accept Vest has been Disabled")
+        sampAddChatMessage("{901A00}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GST {FFFFFF}| {1E90FF}[Autovest]: {FFFFFF}Auto Accept Vest has been Disabled{1E90FF}.")
     end
     if ActivateAv then
         q.onServerMessage = function(c, s)
@@ -90,9 +90,9 @@ end
 function cmdAvest()
     ActivateAvest = not ActivateAvest
     if ActivateAvest then
-        sampAddChatMessage("{901A00}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GST {FFFFFF}| {1E90FF}[Autovest]: {FFFFFF}has been Enabled")
+        sampAddChatMessage("{901A00}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GST {FFFFFF}| {1E90FF}[Autovest]: {FFFFFF}has been Enabled{1E90FF}.")
     else
-        sampAddChatMessage("{901A00}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GST {FFFFFF}| {1E90FF}[Autovest]: {FFFFFF}has been Disabled")
+        sampAddChatMessage("{901A00}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GST {FFFFFF}| {1E90FF}[Autovest]: {FFFFFF}has been Disabled{1E90FF}.")
     end
 end
 
