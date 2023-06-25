@@ -72,9 +72,9 @@ end
 function cmdAv()
     ActivateAv = not ActivateAv
     if ActivateAv then
-        sampAddChatMessage("{33CCFF}Auto Accept Vest {FFFFFF}has been activated.")
+        sampAddChatMessage("{990000}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {003300}Bloods {FFFFFF}| {336600}Grove {1E90FF}[Autovest]: {FFFFFF}Auto Accept Vest has been activated.")
     else
-        sampAddChatMessage("{33CCFF}Auto Accept Vest {FFFFFF}has been disabled.")
+        sampAddChatMessage("{990000}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {003300}Bloods {FFFFFF}| {336600}Grove {1E90FF}[Autovest]: {FFFFFF}Auto Accept Vest has been disabled.")
     end
     if ActivateAv then
         q.onServerMessage = function(c, s)
@@ -90,14 +90,14 @@ end
 function cmdAvest()
     ActivateAvest = not ActivateAvest
     if ActivateAvest then
-        sampAddChatMessage("{33CCFF}[AutoVest]: {FFFFFF}has been Activated.")
+        sampAddChatMessage("{990000}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {003300}Bloods {FFFFFF}| {336600}Grove {1E90FF}[Autovest]: {FFFFFF}has been Activated.")
     else
-        sampAddChatMessage("{33CCFF}[AutoVest]: {FFFFFF}has been Disabled.")
+        sampAddChatMessage("{990000}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {003300}Bloods {FFFFFF}| {336600}Grove {1E90FF}[Autovest]: {FFFFFF}has been Disabled.")
     end
 end
 
 function cmdAvHelp()
-    sampShowDialog(69, "{33CCFF}AutoVest", "{FFFFFF}/av - Toggle Auto Accept Vest.\n/avest - Toggle AutoVest.", "Close")
+    sampShowDialog(69, "{1E90FF}Autovest", "{FFFFFF}/av - Toggle Auto Accept Vest.\n/avest - Toggle AutoVest.", "Close")
 end
 
 function q.onServerMessage(c, s)
