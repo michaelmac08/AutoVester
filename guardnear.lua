@@ -13,7 +13,7 @@ function main()
     while not isSampAvailable() do
         wait(250)
     end
-    sampAddChatMessage("{33CCFF}[AutoVest] {FFFFFF}Loading the script... {33CCFF}[/avhelp]", -1)
+    sampAddChatMessage("{16A8EF}[AutoVest] {FFFFFF}Loading the script... {16A8EF}[/avhelp]", -1)
     sampRegisterChatCommand("av", cmdAv)
     sampRegisterChatCommand("avest", cmdAvest)
     sampRegisterChatCommand("avhelp", cmdAvHelp)
