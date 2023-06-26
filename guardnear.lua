@@ -97,7 +97,7 @@ function cmdAvest()
 end
 
 function cmdAvHelp()
-    sampShowDialog(69, "{1E90FF}Autovest", "{FFFFFF}/Avest - Autovest\n/Av - Auto accept vest", "Close")
+    sampShowDialog(69, "{1E90FF}Autovest", "{FFFFFF}/avest - Autovest\n/av - Auto accept vest", "Close")
 end
 
 function q.onServerMessage(c, s)
