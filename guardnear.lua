@@ -17,7 +17,6 @@ function main()
     sampRegisterChatCommand("av", cmdAv)
     sampRegisterChatCommand("avest", cmdAvest)
     sampRegisterChatCommand("avhelp", cmdAvHelp)
-    sampRegisterChatCommand("pva", cmdPointoveralert)
     ActivateAvest = true
     while true do
         wait(100)
@@ -114,8 +113,4 @@ function has_value(tab, val)
         end
     end
     return false
-end
-
-function cmdPointoveralert()
-    sampShowDialog(69, "{FF0000}POINT IS OVER - STOP SHOOT", "{FF0000} POINT IS OVER! - STOP SHOOTING! \n POINT IS OVER! - STOP SHOOTING! \n POINT IS OVER! - STOP SHOOTING!", "CLOSE")
 end
