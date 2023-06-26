@@ -1,6 +1,6 @@
 script_name("guardnear")
 script_author("Random")
-script_version("2.0.2")
+script_version("2.0.1")
 
 require "lib.moonloader"
 require "lib.sampfuncs"
