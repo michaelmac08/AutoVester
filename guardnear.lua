@@ -14,9 +14,8 @@ function main()
     if not isSampLoaded() or not isSampfuncsLoaded() then
         return
     end
-    while not isSampAvailable() do
+    if isSampAvailable() do
         wait(100)
-    end
     sampAddChatMessage("{901A00}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GSF {FFFFFF}| {1E90FF}[Autovest]: {FFFFFF}Succesfully loaded!", -1)
     sampRegisterChatCommand("av", cmdAv)
     sampRegisterChatCommand("avest", cmdAvest)
