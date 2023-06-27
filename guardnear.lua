@@ -13,7 +13,7 @@ local lastGuardTime = 0
 function main()
 	repeat wait(0) until isSampAvailable()
 		wait(250)
-    sampAddChatMessage("{901A00}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GSF {FFFFFF}| {1E90FF}[Autovest]: {FFFFFF}Succesfully loaded!", -1)
+    sampAddChatMessage("{990000}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GSF {FFFFFF}| {1E90FF}[Autovest]: {FFFFFF}Succesfully loaded!", -1)
     sampRegisterChatCommand("av", cmdAv)
     sampRegisterChatCommand("avest", cmdAvest)
     sampRegisterChatCommand("avhelp", cmdAvHelp)
