@@ -1,27 +1,59 @@
-script_name("guardnear")
-script_author("Random")
-script_version("2.0.4")
-
+local prefix = "{990000}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GSF {FFFFFF}| {1E90FF}[Autovest]: "
 require "lib.moonloader"
 require "lib.sampfuncs"
 local q = require 'lib.samp.events'
+local inicfg = require "inicfg"
 
-local ActivateAv = false
-local ActivateAvest = false
-local lastGuardTime = 0
+local configPath = getWorkingDirectory() .. "\\config\\Autovester.ini"
+local config
+
+function doesFileExist(file)
+    local f = io.open(file, "r")
+    if f then
+        io.close(f)
+        return true
+    else
+        return false
+    end
+end
+
+local function loadConfig()
+    if doesFileExist(configPath) then
+        config = inicfg.load(nil, configPath)
+    else
+        config = {
+            General = {
+                Av = false,
+                Avest = false
+            }
+        }
+        inicfg.save(config, configPath)
+    end
+end
+
+local function saveConfig()
+    inicfg.save(config, configPath)
+end
 
 function main()
-	repeat wait(0) until isSampAvailable()
-		wait(250)
-    sampAddChatMessage("{990000}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GSF {FFFFFF}| {1E90FF}[Autovest]: {FFFFFF}Succesfully loaded!", -1)
+    if not isSampLoaded() or not isSampfuncsLoaded() then
+        return
+    end
+    while not isSampAvailable() do
+        wait(100)
+    end
+    if isSampAvailable() then
+        wait(0)
+    end
+    sampAddChatMessage(prefix .. "{FFFFFF}Successfully loaded!", -1)
+    loadConfig()
     sampRegisterChatCommand("av", cmdAv)
     sampRegisterChatCommand("avest", cmdAvest)
     sampRegisterChatCommand("avhelp", cmdAvHelp)
-    ActivateAvest = true
     while true do
         wait(100)
         playerid = getClosestPlayerId(7, true)
-        if sampIsPlayerConnected(playerid) and ActivateAvest then
+        if sampIsPlayerConnected(playerid) and config.ActivateAvest then
             local currentTime = os.clock()
             if currentTime - lastGuardTime >= 11.2 then
                 sampSendChat(string.format("/guard %d 200", playerid))
@@ -70,13 +102,14 @@ function get_distance_to_player(playerId)
 end
 
 function cmdAv()
-    ActivateAv = not ActivateAv
-    if ActivateAv then
+    config.General.Av = not config.General.Av
+    saveConfig()
+    if config.General.Av then
         sampAddChatMessage("{1E90FF}[Autovest]: {FFFFFF}Auto accept vest has been Enabled")
     else
         sampAddChatMessage("{1E90FF}[Autovest]: {FFFFFF}Auto accept vest has been Disabled")
     end
-    if ActivateAv then
+    if config.General.Av then
         q.onServerMessage = function(c, s)
             if string.find(s, "wants to protect you for $200, type /accept bodyguard to accept.") then
                 sampSendChat("/accept bodyguard")
@@ -88,20 +121,21 @@ function cmdAv()
 end
 
 function cmdAvest()
-    ActivateAvest = not ActivateAvest
-    if ActivateAvest then
-        sampAddChatMessage("{901A00}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GSF {FFFFFF}| {1E90FF}[Autovest]: {FFFFFF}has been Enabled")
+    config.General.Avest = not config.General.Avest
+    saveConfig()
+    if config.General.Avest then
+        sampAddChatMessage(prefix .. "{FFFFFF}has been Enabled")
     else
-        sampAddChatMessage("{901A00}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GSF {FFFFFF}| {1E90FF}[Autovest]: {FFFFFF}has been Disabled")
+        sampAddChatMessage(prefix .. "{FFFFFF}has been Disabled")
     end
 end
 
 function cmdAvHelp()
-    sampShowDialog(69, "{1E90FF}Autovest", "{FFFFFF}/avest - Autovest\n/av - Auto accept vest", "Close")
+    sampShowDialog(69, "{1E90FF}Autovest", "{FFFFFF}/Avest - Autovest\n/Av - Auto accept vest", "Close")
 end
 
 function q.onServerMessage(c, s)
-    if string.find(s, "wants to protect you for $200, type /accept bodyguard to accept.") and ActivateAv then
+    if string.find(s, "wants to protect you for $200, type /accept bodyguard to accept.") and config.General.Av then
         sampSendChat("/accept bodyguard")
     end
 end
