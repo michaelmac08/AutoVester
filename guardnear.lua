@@ -5,8 +5,8 @@ script_version("2.1.6")
 local prefix = "{990000}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GSF {FFFFFF}| {1E90FF}[Autovest]: "
 require "lib.moonloader"
 require "lib.sampfuncs"
-local q = require 'lib.samp.events'
 local inicfg = require "inicfg"
+local q = require 'lib.samp.events'
 
 local configPath = getWorkingDirectory() .. "\\config\\Autovester.ini"
 local config
@@ -39,6 +39,9 @@ local function saveConfig()
     inicfg.save(config, configPath)
 end
 
+local ActivateServerMsg = false
+local ActivateAvest = false
+
 function main()
     if not isSampLoaded() or not isSampfuncsLoaded() then
         return
@@ -57,12 +60,9 @@ function main()
     while true do
         wait(100)
         playerid = getClosestPlayerId(7, true)
-        if sampIsPlayerConnected(playerid) and config.ActivateAvest then
-            local currentTime = os.clock()
-            if currentTime - lastGuardTime >= 11.2 then
-                sampSendChat(string.format("/guard %d 200", playerid))
-                lastGuardTime = currentTime
-            end
+        if sampIsPlayerConnected(playerid) and config.General.Avest then
+            sampSendChat(string.format("/guard %d 200", playerid))
+            wait(11170)
         end
     end
 end
@@ -76,12 +76,8 @@ function getClosestPlayerId(maxdist, ArmorCheck)
             local result, ped = sampGetCharHandleBySampPlayerId(i)
             if result and not sampIsPlayerPaused(i) then
                 local dist = get_distance_to_player(i)
-                if dist < maxdist then
-                    if ArmorCheck then
-                        if sampGetPlayerArmor(i) < 48 and has_value(GangSkins, getCharModel(ped)) then
-                            return i
-                        end
-                    else
+                if (dist < maxdist and sampGetPlayerArmor(i) < 48) then
+                    if has_value(GangSkins, getCharModel(ped)) then
                         return i
                     end
                 end
@@ -109,9 +105,9 @@ function cmdAv()
     config.General.Av = not config.General.Av
     saveConfig()
     if config.General.Av then
-        sampAddChatMessage("{1E90FF}[Autovest]: {FFFFFF}Auto accept vest has been Enabled")
+        sampAddChatMessage(prefix .. "{FFFFFF}Auto accept vest has been Enabled")
     else
-        sampAddChatMessage("{1E90FF}[Autovest]: {FFFFFF}Auto accept vest has been Disabled")
+        sampAddChatMessage(prefix .. "{FFFFFF}Auto accept vest has been Disabled")
     end
     if config.General.Av then
         q.onServerMessage = function(c, s)
@@ -123,6 +119,7 @@ function cmdAv()
         q.onServerMessage = nil
     end
 end
+
 
 function cmdAvest()
     config.General.Avest = not config.General.Avest
@@ -139,7 +136,7 @@ function cmdAvHelp()
 end
 
 function q.onServerMessage(c, s)
-    if string.find(s, "wants to protect you for $200, type /accept bodyguard to accept.") and config.General.Av then
+    if string.find(s, "wants to protect you for $200, type /accept bodyguard to accept.") and ActivateServerMsg then
         sampSendChat("/accept bodyguard")
     end
 end
