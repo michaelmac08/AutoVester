@@ -1,6 +1,6 @@
 script_name("guardnear")
 script_author("Random")
-script_version("2.1.6")
+script_version("2.1.7")
 
 local prefix = "{990000}Yakuza {FFFFFF}| {FF0000}LFC {FFFFFF}| {460C09}Bloods {FFFFFF}| {006400}GSF {FFFFFF}| {1E90FF}[Autovest]: "
 require "lib.moonloader"
