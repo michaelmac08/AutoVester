@@ -62,7 +62,7 @@ function main()
         playerid = getClosestPlayerId(7, true)
         if sampIsPlayerConnected(playerid) and config.General.Avest then
             sampSendChat(string.format("/guard %d 200", playerid))
-            wait(11170)
+            wait(10760)
         end
     end
 end
@@ -105,9 +105,9 @@ function cmdAv()
     config.General.Av = not config.General.Av
     saveConfig()
     if config.General.Av then
-        sampAddChatMessage(prefix .. "{FFFFFF}Auto accept vest has been Enabled")
+        sampAddChatMessage("{1E90FF}[Autovest]:{FFFFFF}Auto accept vest has been Enabled")
     else
-        sampAddChatMessage(prefix .. "{FFFFFF}Auto accept vest has been Disabled")
+        sampAddChatMessage("{1E90FF}[Autovest]:{FFFFFF}Auto accept vest has been Disabled")
     end
     if config.General.Av then
         q.onServerMessage = function(c, s)
