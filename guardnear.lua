@@ -62,7 +62,7 @@ function main()
         playerid = getClosestPlayerId(7, true)
         if sampIsPlayerConnected(playerid) and config.General.Avest then
             sampSendChat(string.format("/guard %d 200", playerid))
-            wait(11000)
+            wait(11200)
         end
     end
 end
