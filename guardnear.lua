@@ -136,7 +136,7 @@ function cmdAvHelp()
 end
 
 function q.onServerMessage(c, s)
-    if string.find(s, "wants to protect you for $200, type /accept bodyguard to accept.") and ActivateServerMsg then
+    if string.find(s, "wants to protect you for $200, type /accept bodyguard to accept.") and config.General.Av then
         sampSendChat("/accept bodyguard")
     end
 end
