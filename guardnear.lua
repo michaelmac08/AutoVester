@@ -68,7 +68,7 @@ function main()
 end
 
 function getClosestPlayerId(maxdist, ArmorCheck)
-    local GangSkins = {49, 193, 210, 228, 263, 122, 186, 123, 0, 270, 269, 271, 106, 195, 190, 19, 144, 170, 180, 160, 67, 219, 3, 93, 147, 98, 305, 150, 295, 234, 107, 119, 293}
+    local GangSkins = {60, 49, 193, 210, 263, 122, 186, 123, 0, 270, 269, 271, 106, 195, 190, 19, 144, 170, 180, 160, 67, 219, 3, 93, 147, 98, 305, 150, 295, 234, 107, 119, 293}
     local i = -1
     local maxplayerid = sampGetMaxPlayerId(false)
     for i = 0, maxplayerid do
