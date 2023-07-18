@@ -105,9 +105,9 @@ function cmdAv()
     config.General.Av = not config.General.Av
     saveConfig()
     if config.General.Av then
-        sampAddChatMessage("{1E90FF}[Autovest]:{FFFFFF}Auto accept vest has been Enabled")
+        sampAddChatMessage("{1E90FF}[Autovest]:{FFFFFF}Auto accept vest has been enabled.")
     else
-        sampAddChatMessage("{1E90FF}[Autovest]:{FFFFFF}Auto accept vest has been Disabled")
+        sampAddChatMessage("{1E90FF}[Autovest]:{FFFFFF}Auto accept vest has been disabled.")
     end
     if config.General.Av then
         q.onServerMessage = function(c, s)
@@ -125,9 +125,9 @@ function cmdAvest()
     config.General.Avest = not config.General.Avest
     saveConfig()
     if config.General.Avest then
-        sampAddChatMessage(prefix .. "{FFFFFF}has been Enabled")
+        sampAddChatMessage(prefix .. "{FFFFFF}has been enabled.")
     else
-        sampAddChatMessage(prefix .. "{FFFFFF}has been Disabled")
+        sampAddChatMessage(prefix .. "{FFFFFF}has been disabled.")
     end
 end
 
