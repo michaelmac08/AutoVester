@@ -39,7 +39,7 @@ local function saveConfig()
     inicfg.save(config, configPath)
 end
 
-local ActivateServerMsg = false
+local ActivateAv = false
 local ActivateAvest = false
 
 function main()
