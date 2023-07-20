@@ -2662,7 +2662,41 @@ function main()
 				end
 			end
 		end
-			
+				
+		if _enabled and faid_timer <= localClock() - _last_timer_faid then
+			if autoaccepter or autobind.faidautovestonly then
+				if getCharHealth(ped) - 5000000 < autobind.faidnumber and autobind.faid and not faidtoggle then
+					sampSendChat("/faid")
+					_last_timer_faid = localClock()
+				end
+			end
+		end
+		
+		if _enabled and autobind.point_capper_timer <= localClock() - _last_point_capper_refresh then
+			if flashing[1] and not timeset[1] and not disablepointspam then
+				sampSendChat("/pointinfo")
+				_last_point_capper_refresh = localClock()
+				lua_thread.create(function()
+					pointspam = true
+					wait(3000)
+					pointspam = false
+				end)
+			end
+		end
+		
+		if _enabled and autobind.turf_capper_timer <= localClock() - _last_turf_capper_refresh then
+			if flashing[2] and not timeset[2] and not disableturfspam then
+				sampSendChat("/turfinfo")
+				_last_turf_capper_refresh = localClock()
+				lua_thread.create(function()
+					turfspam = true
+					wait(3000)
+					turfspam = false
+				end)
+			end
+		end
+	end	
+end
 
 function listenToKeybinds()
 	if _enabled and not menu[0] and not inuse_key then
@@ -2698,6 +2732,113 @@ function listenToKeybinds()
 						end
 					end
 				end
+			end
+		end
+		if autobind.Keybinds.BlackMarket.Toggle then
+			local key, key2 = nil
+			if autobind.Keybinds.BlackMarket.Dual then 
+				key, key2 = autobind.Keybinds.BlackMarket.Keybind:match("(.+),(.+)") 
+			end
+			if (key and key2 and autobind.Keybinds.BlackMarket.Dual and keycheck({k  = {key, key2}, t = {'KeyDown', 'KeyPressed'}}) or keycheck({k  = {autobind.Keybinds.BlackMarket.Keybind}, t = {'KeyPressed'}})) then
+				if not bmbool then
+					bmbool = true
+					sendBMCmd()
+				end 					
+			end
+		end
+		if autobind.Keybinds.FactionLocker.Toggle then
+			local key, key2 = nil
+			if autobind.Keybinds.FactionLocker.Dual then 
+				key, key2 = autobind.Keybinds.FactionLocker.Keybind:match("(.+),(.+)") 
+			end
+			if (key and key2 and autobind.Keybinds.FactionLocker.Dual and keycheck({k  = {key, key2}, t = {'KeyDown', 'KeyPressed'}}) or keycheck({k  = {autobind.Keybinds.FactionLocker.Keybind}, t = {'KeyPressed'}})) then
+				if not lockerbool and not sampIsChatInputActive() and not sampIsDialogActive() and not sampIsScoreboardOpen() and not isSampfuncsConsoleActive() then
+					lockerbool = true
+					sendLockerCmd()
+				end
+			end
+		end
+		
+		local key, key2 = nil
+		if autobind.Keybinds.BikeBind.Dual then 
+			key, key2 = autobind.Keybinds.BikeBind.Keybind:match("(.+),(.+)") 
+		end
+		if (key and key2 and autobind.Keybinds.BikeBind.Dual and keycheck({k  = {key, key2}, t = {'KeyDown', 'KeyDown'}}) or keycheck({k  = {autobind.Keybinds.BikeBind.Keybind}, t = {'KeyDown'}})) then
+			if not isPauseMenuActive() and not sampIsChatInputActive() and not sampIsDialogActive() and not isSampfuncsConsoleActive() and not sampIsScoreboardOpen() and autobind.Keybinds.BikeBind.Toggle then
+				if isCharOnAnyBike(ped) then
+					local veh = storeCarCharIsInNoSave(ped)
+					if not isCarInAirProper(veh) then
+						if bike[getCarModel(veh)] then 
+							setGameKeyUpDown(keys.vehicle.ACCELERATE, 255, 0)
+						elseif moto[getCarModel(veh)] then 
+							setGameKeyUpDown(keys.vehicle.STEERUP_STEERDOWN, -128, 0)
+						end
+					end
+				end
+			end	
+		end
+			
+		local key, key2 = nil
+		if autobind.Keybinds.SprintBind.Dual then 
+			key, key2 = autobind.Keybinds.SprintBind.Keybind:match("(.+),(.+)") 
+		end
+		if (key and key2 and autobind.Keybinds.SprintBind.Dual and keycheck({k  = {key, key2}, t = {'KeyDown', 'KeyPressed'}}) or keycheck({k  = {autobind.Keybinds.SprintBind.Keybind}, t = {'KeyPressed'}})) then
+			autobind.Keybinds.SprintBind.Toggle = not autobind.Keybinds.SprintBind.Toggle 
+			sampAddChatMessage('[Autobind]{ffff00} Sprintbind: '..(autobind.Keybinds.SprintBind.Toggle and '{008000}on' or '{FF0000}off'), -1) 
+		end
+		
+		if autobind.Keybinds.Frisk.Toggle then
+			local key, key2 = nil
+			if autobind.Keybinds.Frisk.Dual then 
+				key, key2 = autobind.Keybinds.Frisk.Keybind:match("(.+),(.+)") 
+			end
+			if (key and key2 and autobind.Keybinds.Frisk.Dual and keycheck({k  = {key, key2}, t = {'KeyDown', 'KeyPressed'}}) or keycheck({k  = {autobind.Keybinds.Frisk.Keybind}, t = {'KeyPressed'}})) then
+				local _, playerped = storeClosestEntities(ped)
+				local result, id = sampGetPlayerIdByCharHandle(playerped)
+				local result2, target = getCharPlayerIsTargeting(h)
+				if result then
+					if result2 and autobind.Frisk[1] or not autobind.Frisk[1] then
+						if target == playerped and autobind.Frisk[1] or not autobind.Frisk[1] then
+							if isPlayerAiming(true, true) and autobind.Frisk[2] or not autobind.Frisk[2] then
+								sampSendChat(string.format("/frisk %d", id))
+								wait(1000)
+							end
+						end
+					end
+				end
+			end
+		end
+				
+		if autobind.Keybinds.TakePills.Toggle then
+			local key, key2 = nil
+			if autobind.Keybinds.TakePills.Dual then 
+				key, key2 = autobind.Keybinds.TakePills.Keybind:match("(.+),(.+)") 
+			end
+			if (key and key2 and autobind.Keybinds.TakePills.Dual and keycheck({k  = {key, key2}, t = {'KeyDown', 'KeyPressed'}}) or keycheck({k  = {autobind.Keybinds.TakePills.Keybind}, t = {'KeyPressed'}})) then
+				sampSendChat("/takepills")
+				wait(1000)
+			end
+		end
+				
+		if autobind.Keybinds.AcceptDeath.Toggle then
+			local key, key2 = nil
+			if autobind.Keybinds.AcceptDeath.Dual then 
+				key, key2 = autobind.Keybinds.AcceptDeath.Keybind:match("(.+),(.+)") 
+			end
+			if (key and key2 and autobind.Keybinds.AcceptDeath.Dual and keycheck({k  = {key, key2}, t = {'KeyDown', 'KeyPressed'}}) or keycheck({k  = {autobind.Keybinds.AcceptDeath.Keybind}, t = {'KeyPressed'}})) then
+				sampSendChat("/accept death")
+				wait(1000)
+			end
+		end
+				
+		if autobind.Keybinds.FAid.Toggle then
+			local key, key2 = nil
+			if autobind.Keybinds.FAid.Dual then 
+				key, key2 = autobind.Keybinds.FAid.Keybind:match("(.+),(.+)") 
+			end
+			if (key and key2 and autobind.Keybinds.FAid.Dual and keycheck({k  = {key, key2}, t = {'KeyDown', 'KeyPressed'}}) or keycheck({k  = {autobind.Keybinds.FAid.Keybind}, t = {'KeyPressed'}})) then
+				sampSendChat("/faid")
+				wait(1000)
 			end
 		end
 	end
@@ -2751,7 +2892,335 @@ function onWindowMessage(msg, wparam, lparam)
     end
 end
 
-if text:find("That player isn't near you.") and color == -1347440726 then
+function sampev.onGangZoneFlash(zoneId, color)
+	lua_thread.create(function()
+		wait(0)
+		for k, v in pairs(pointzoneids) do
+			if v == zoneId then
+				flashing[1] = true
+			end
+		end
+		for k, v in pairs(turfzoneids) do
+			if v == zoneId then
+				flashing[2] = true
+			end
+		end
+	end)
+end
+function sampev.onGangZoneStopFlash(zoneId)
+	lua_thread.create(function()
+		wait(0)
+		for k, v in pairs(pointzoneids) do
+			if v == zoneId then
+				flashing[1] = false
+			end
+		end
+		for k, v in pairs(turfzoneids) do
+			if v == zoneId then
+				flashing[2] = false
+			end
+		end
+	end)
+end
+
+function sampev.onSetSpawnInfo(team, skin, _unused, position, rotation, weapons, ammo)
+	lua_thread.create(function()
+		wait(3000)
+		if not once then
+			if flashing[1] and not timeset[1] and not disablepointspam then
+				sampSendChat("/pointinfo")
+				_last_point_capper_refresh = localClock()
+				lua_thread.create(function()
+					pointspam = true
+					wait(3000)
+					pointspam = false
+				end)
+			end
+			if flashing[2] and not timeset[2] and not disableturfspam then
+				sampSendChat("/turfinfo")
+				_last_turf_capper_refresh = localClock()
+				lua_thread.create(function()
+					turfspam = true
+					wait(3000)
+					turfspam = false
+				end)
+			end
+			once = true
+		end
+	end)
+end
+
+function sampev.onServerMessage(color, text)
+	if _enabled then
+		if text:match("You don't have a first aid kit!") and color == -1263159297 then
+			lua_thread.create(function()
+				wait(0)
+				faidtoggle = true
+			end)
+			if autobind.messages.nofaid then
+				return false
+			end
+		end
+		
+		if text:match("DIAMOND DONATOR: You have purchased a 10 first aid kits for $2,500.") and color == -1210979329 then
+			lua_thread.create(function()
+				wait(0)
+				faidtoggle = false
+			end)
+		end
+		
+		if text:match("/firstaid /treatinjury") and color == 869072810 then
+			lua_thread.create(function()
+				wait(0)
+				faidtoggle = false
+			end)
+		end
+
+		if text:match("You already have a first aid kit on, use /firstaidoff to turn it off!") and color == -1263159297 then
+			lua_thread.create(function()
+				wait(0)
+				faidtoggle = true
+			end)
+			if autobind.messages.faidon then
+				return false
+			end
+		end
+		
+		if text:match("Your first aid kit no longer takes effect.") and color == -1263159297 then
+			lua_thread.create(function()
+				wait(0)
+				faidtoggle = false
+				if autobind.renewfaid and autobind.faid then
+					sampSendChat("/faid")
+				end
+			end)
+			if autobind.messages.noeffect  then
+				return false
+			end
+		end
+
+		if text:match("Weapon: Sniper Rifle.") then
+			print("4 "..color)
+			playsound(3)
+		end
+		
+		if text:find("Your hospital bill") and color == -8224086 then
+			if autobind.badge then
+				sampSendChat("/badge")
+			end
+		end
+
+		if text:find("The time is now") and color == -86 then 
+			if autobind.capturf then 
+				sampSendChat("/capturf") 
+				if autobind.disableaftercapping then
+					autobind.capturf = false
+				end
+			end 
+			if autobind.capture then 
+				sampSendChat("/capture") 
+				if autobind.disableaftercapping then
+					autobind.capture = false
+				end
+			end
+		end
+		
+		if text:find("has Offered you to have Sex with them, for") then 
+			print("5 "..color)
+			if autobind.autoacceptsex then
+				sampSendChat("/accept sex")
+			end
+		end
+		
+		if text:find("wants to repair your car for $1") then 
+			print("6 "..color)
+			if autobind.autoacceptrepair then
+				sampSendChat("/accept repair")
+			end
+		end
+
+		if text:match("You are not a Sapphire or Diamond Donator!") or 
+		   text:match("You are not at the black market!") or 
+		   text:match("You can't do this right now.") or 
+		   text:match("You have been muted automatically for spamming. Please wait 10 seconds and try again.") or 
+		   text:match("You are muted from submitting commands right now.") and bmbool == 1 then
+			bmbool = false
+			bmstate = 0
+			bmcmd = 0
+		end
+		
+		if text:match('You are not in range of your lockers.') or 
+		   text:match('You have been muted automatically for spamming. Please wait 10 seconds and try again.') or 
+		   text:match('You are muted from submitting commands right now.') or 
+		   text:match("You can't do this right now.") or 
+		   text:match("You can't use your lockers if you were recently shot.") and lockerbool then
+			lockerbool = false
+			lockerstate = 0
+			lockercmd = 0
+		end
+		
+		if text:match('You are not at your family gun locker.') or 
+		   text:match('You have been muted automatically for spamming. Please wait 10 seconds and try again.') or 
+		   text:match("You can't do this right now.") or 
+		   text:match('You are muted from submitting commands right now.') and lockerbool then
+			gangbool = false
+			gangstate = 0
+			gangcmd = 0
+		end
+
+		if text:match("Point Info:") and color == -5963606 then
+			if pointspam then
+				return false
+			end
+		end
+		
+		if text:match("No family has capped the point or the point is not ready to be capped.") and color == -1077886209 then
+			disablepointspam = true
+			if pointspam then
+				return false
+			end
+		end
+		
+		for k, v in pairs(pointnamelist) do
+			if text:find("*") and text:find(v) and text:find('Capper:') and text:find('Family:') and text:find('Time left:') and color == -86 then
+				local location, nickname, pointname, number = ""
+				if string.contains(text, "Less than", false) then
+					location, nickname, pointname, number = text:match("* (.+) | Capper: (.+) | Family: (.+) | Time left: Less than (.+) minute")
+				else
+					location, nickname, pointname, number = text:match("* (.+) | Capper: (.+) | Family: (.+) | Time left: (.+) minutes")
+				end
+				
+				point_capper = pointname 
+				pointtime = number
+				point_capper_capturedby = nickname
+				point_location = location
+
+				if autobind.notification_capper_hide then
+					capper_hide = true
+				end
+				if pointspam then
+					return false
+				end
+			end
+		end
+		
+		
+		if text:find("Turf Info:") and color == -5963606 then
+			if turfspam then
+				return false
+			end
+		end
+		
+		if text:find("Nobody is attempting to capture any turfs or no turfs are available for capture yet.") and color == -1077886209 then
+			disableturfspam = true
+			if turfspam then
+				return false
+			end
+		end
+		
+		for k, v in pairs(turfnamelist) do
+			if text:find("*") and text:find(v) and text:find('Capper:') and (text:find('Family:') or text:find('By:')) and text:find('Time left:') and color == -86 then
+				local location, nickname, turfname, number = ""
+				if string.contains(text, 'Family:', false) then
+					if string.contains(text, "Less than", false) then
+						location, nickname, turfname, number = text:match("* (.+) | Capper: (.+) | Family: (.+) | Time left: Less than (.+) minute")
+					else
+						location, nickname, turfname, number = text:match("* (.+) | Capper: (.+) | Family: (.+) | Time left: (.+) minutes")
+					end
+				end
+				if string.contains(text, 'By:', false) then
+					if string.contains(text, "Less than", false) then
+						location, nickname, turfname, number = text:match("* (.+) | Capper: (.+) | By: (.+) | Time left: Less than (.+) minute")
+					else
+						location, nickname, turfname, number = text:match("* (.+) | Capper: (.+) | By: (.+) | Time left: (.+) minutes")
+					end
+				end
+				
+				turf_capper = turfname 
+				turftime = number
+				turf_capper_capturedby = nickname
+				turf_location = location
+				
+				if autobind.notification_capper_hide then
+					capper_hide = true
+				end
+				if turfspam then
+					return false
+				end
+			end
+		end
+
+		if text:find("is attempting to take over of the") and text:find('for') and text:find('they\'ll own it in 10 minutes.') and color == -65366 then
+			local nickname, location, pointname = text:match("(.+) is attempting to take over of the (.+) for (.+), they'll own it in 10 minutes.")
+			nickname = nickname:gsub("%s+", "_")
+			
+			point_capper = pointname
+			point_capper_capturedby = nickname
+			point_location = location
+		
+			_last_point_capper = localClock()
+			timeset[1] = true
+			disablepointspam = false
+			if autobind.notification_capper_hide then
+				capper_hide = true
+			end
+		end
+		
+		if text:find("is attempting to take control of") and text:find('for') and text:find('(15 minutes remaining)') and color == -65366 then
+			local nickname, location, turfname = text:match("(.+) is attempting to take control of (.+) for (.+) %(15 minutes remaining%).")
+			nickname = nickname:gsub("%s+", "_")
+			
+			turf_capper = turfname 
+			turf_capper_capturedby = nickname
+			turf_location = location
+		
+			_last_turf_capper = localClock()
+			timeset[2] = true
+			disableturfspam = false
+			if autobind.notification_capper_hide then
+				capper_hide = true
+			end
+		end
+
+		for k, v in pairs(pointnamelist) do
+			if text:find("has taken control of") and text:find(v) and color == -65366 then
+				point_capper = 'Nobody'
+				point_capper_capturedby = 'Nobody'
+				point_location = "No captured point" 
+				pointtime = 0
+				
+				timeset[1] = false
+				if autobind.notification_capper_hide then
+					capper_hide = false
+				end
+				
+				if autoaccepter and autobind.vestmode == 0 then
+					autoaccepter = false
+
+					sampAddChatMessage("[Autobind]{ffff00} Automatic vest disabled because point had ended.", 1999280)
+				end
+			end
+		end
+		
+		for k, v in pairs(turfnamelist) do
+			lua_thread.create(function()
+				wait(0)
+				if text:find("has taken control of") and text:find(v) and color == -65366 then
+					turf_capper = 'Nobody'
+					turf_capper_capturedby = 'Nobody'
+					turf_location = "No captured turf" 
+					turftime = 0
+					
+					timeset[2] = false
+					if autobind.notification_capper_hide then
+						capper_hide = false
+					end
+				end
+			end)
+		end
+		
+
+		if text:find("That player isn't near you.") and color == -1347440726 then
 			lua_thread.create(function()
 				wait(0)
 				if autobind.ddmode then
@@ -2855,9 +3324,6 @@ if text:find("That player isn't near you.") and color == -1347440726 then
 		if text:find("* Bodyguard ") and text:find(" wants to protect you for $200, type /accept bodyguard to accept.") and color == 869072810 then
 			lua_thread.create(function()
 				wait(0)
-				if autobind.notification_hide[2] then
-					hide[2] = true
-				end
 
 				if color >= 40 and text ~= 746 then
 					autoaccepternick = text:match("%* Bodyguard (.+) wants to protect you for %$200, type %/accept bodyguard to accept%.")
@@ -2867,8 +3333,6 @@ if text:find("That player isn't near you.") and color == -1347440726 then
 					playerid2 = sampGetPlayerIdByNickname(autoaccepternick)
 					autoacceptertoggle = true
 				end
-				
-				playsound(2)
 				
 				if getCharArmour(ped) < 49 and sampGetPlayerAnimationId(ped) ~= 746 and autoaccepter and not specstate then
 					sampSendChat("/accept bodyguard")
@@ -2884,9 +3348,627 @@ if text:find("That player isn't near you.") and color == -1347440726 then
 	end
 end
 
+function sampev.onShowDialog(id, style, title, button1, button2, text)
+	if bmbool then
+		if title:find('Black Market') then
+			if bmstate == 0 then
+				if (getCharArmour(ped) == 100 and getCharHealth(ped) - 5000000 == 100) or not autobind.BlackMarket[1] then
+					bmstate = 1
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 2, nil)
+				bmstate = 1
+				sendBMCmd()
+				return false
+			end
+			if bmstate == 1 then
+				if hasCharGotWeapon(ped, 24) or not autobind.BlackMarket[2] then
+					bmstate = 2
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 6, nil)
+				bmstate = 2
+				sendBMCmd()
+				return false
+			end
+			
+			if bmstate == 2 then
+				if hasCharGotWeapon(ped, 24) or not autobind.BlackMarket[3] then
+					bmstate = 3
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 7, nil)
+				bmstate = 3
+				sendBMCmd()
+				return false
+			end
+			if bmstate == 3 then
+				if hasCharGotWeapon(ped, 27) or not autobind.BlackMarket[4] then
+					bmstate = 4
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 8, nil)
+				bmstate = 4
+				sendBMCmd()
+				return false
+			end
+			if bmstate == 4 then
+				if hasCharGotWeapon(ped, 29) or not autobind.BlackMarket[5] then
+					bmstate = 5
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 9, nil)
+				bmstate = 5
+				sendBMCmd()
+				return false
+			end
+			if bmstate == 5 then
+				if hasCharGotWeapon(ped, 29) or not autobind.BlackMarket[6] then
+					bmstate = 6
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 10, nil)
+				bmstate = 6
+				sendBMCmd()
+				return false
+			end
+			if bmstate == 6 then
+				if hasCharGotWeapon(ped, 29) or not autobind.BlackMarket[7] then
+					bmstate = 7
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 11, nil)
+				bmstate = 7
+				sendBMCmd()
+				return false
+			end
+			if bmstate == 7 then
+				if hasCharGotWeapon(ped, 34) or not autobind.BlackMarket[8] then
+					bmstate = 8
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 12, nil) 
+				bmstate = 8
+				sendBMCmd()
+				return false
+			end
+			if bmstate == 8 then
+				if hasCharGotWeapon(ped, 24) or not autobind.BlackMarket[9] then
+					bmstate = 9
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 13, nil)
+				bmstate = 9
+				sendBMCmd()
+				return false
+			end
+			if bmstate == 9 then
+				if hasCharGotWeapon(ped, 31) or not autobind.BlackMarket[10] then
+					bmstate = 10
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 14, nil) 
+				bmstate = 10
+				sendBMCmd()
+				return false
+			end
+			if bmstate == 10 then
+				if hasCharGotWeapon(ped, 31) or not autobind.BlackMarket[11] then
+					bmstate = 11
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 15, nil)
+				bmstate = 11
+				sendBMCmd()
+				return false
+			end
+			
+			if bmstate == 11 then
+				if hasCharGotWeapon(ped, 27) or not autobind.BlackMarket[12] then
+					bmstate = 12
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 16, nil)
+				bmstate = 12
+				sendBMCmd()
+				return false
+			end
+			if bmstate == 12 then
+				if hasCharGotWeapon(ped, 34) or not autobind.BlackMarket[13] then
+					bmbool = false
+					bmstate = 0
+					bmcmd = 0
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 17, nil)
+				bmbool = false
+				bmstate = 0
+				bmcmd = 0
+				return false
+			end
+		end
+	end
+	if lockerbool then
+		if title:find('LSPD Menu') or title:find('FBI Menu') or title:find('ARES Menu') then
+			sampSendDialogResponse(id, 1, 1, nil)
+			return false
+		end
+		
+		if title:find('LSPD Equipment') or title:find('FBI Weapons') or title:find('ARES Equipment') then
+			--Deagle
+			if lockerstate == 0 then
+				if hasCharGotWeapon(PLAYER_PED, 24) or autobind.FactionLocker[1] == false then
+					lockerstate = 1
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+
+				sampSendDialogResponse(id, 1, 0, nil)
+				lockerstate = 1
+				sendLockerCmd()
+				return false
+			end
+
+			--Shotgun
+			if lockerstate == 1 then
+				if hasCharGotWeapon(PLAYER_PED, 25) or hasCharGotWeapon(PLAYER_PED, 27) or autobind.FactionLocker[2] == false then
+					lockerstate = 2
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+
+				sampSendDialogResponse(id, 1, 1, nil)
+				lockerstate = 2
+				sendLockerCmd()
+				return false
+			end
+
+			--SPAS-12
+			if lockerstate == 2 then
+				if hasCharGotWeapon(PLAYER_PED, 27) or autobind.FactionLocker[3] == false then
+					lockerstate = 3
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+
+				sampSendDialogResponse(id, 1, 2, nil)
+				lockerstate = 3
+				sendLockerCmd()
+				return false
+			end
+
+			--MP5
+			if lockerstate == 3 then
+				if hasCharGotWeapon(PLAYER_PED, 29) or autobind.FactionLocker[4] == false then
+					lockerstate = 4
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+
+				sampSendDialogResponse(id, 1, 3, nil)
+				lockerstate = 4
+				sendLockerCmd()
+				return false
+			end
+
+			--M4
+			if lockerstate == 4 then
+				if hasCharGotWeapon(PLAYER_PED, 31) or autobind.FactionLocker[5] == false then
+					lockerstate = 5
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+
+				sampSendDialogResponse(id, 1, 4, nil)
+				lockerstate = 5
+				sendLockerCmd()
+				return false
+			end
+
+			--AK-47
+			if lockerstate == 5 then
+				if hasCharGotWeapon(PLAYER_PED, 30) or autobind.FactionLocker[6] == false then
+					lockerstate = 6
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+
+				sampSendDialogResponse(id, 1, 5, nil)
+				lockerstate = 6
+				sendLockerCmd()
+				return false
+			end
+
+			--Smoke Grenade
+			if lockerstate == 6 then
+				if hasCharGotWeapon(PLAYER_PED, 17) or autobind.FactionLocker[7] == false then
+					lockerstate = 7
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+
+				sampSendDialogResponse(id, 1, 6, nil)
+				lockerstate = 7
+				sendLockerCmd()
+				return false
+			end     
+
+			--Camera
+			if lockerstate == 7 then
+				if hasCharGotWeapon(PLAYER_PED, 43) or autobind.FactionLocker[8] == false then
+					lockerstate = 8
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+
+				sampSendDialogResponse(id, 1, 7, nil)
+				lockerstate = 8
+				sendLockerCmd()
+				return false
+			end
+
+			--Sniper Rifle
+			if lockerstate == 8 then
+				if hasCharGotWeapon(PLAYER_PED, 34) or autobind.FactionLocker[9] == false then
+					lockerstate = 9
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+
+				sampSendDialogResponse(id, 1, 8, nil)
+				lockerstate = 9
+				sendLockerCmd()
+				return false
+			end
+
+			--Armor
+			if lockerstate == 9 then
+				if(getCharArmour(PLAYER_PED) == 100 or autobind.FactionLocker[10] == false) then
+					lockerstate = 10
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+
+				sampSendDialogResponse(id, 1, 9, nil)
+				lockerstate = 10
+				sendLockerCmd()
+				return false
+			end
+		  
+			--Health
+			if lockerstate == 10 then
+				if getCharHealth(ped) - 5000000 == 100 or autobind.FactionLocker[11] == false then
+					lockerbool = false
+					lockerstate = 0
+					lockercmd = 0
+					return false
+				end
+
+				sampSendDialogResponse(id, 1, 10, nil)
+				lockerbool = false
+				lockerstate = 0
+				lockercmd = 0
+				return false
+			end
+		end
+		
+	end
+	if gangbool then
+		if title:find('Family Gun Locker') then
+			if gangstate == 0 then -- shotgun
+				if hasCharGotWeapon(ped, 25) or not autobind.GangLocker[1] then
+					gangstate = 1
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 0, nil)
+				gangstate = 1
+				sendGangCmd()
+				return false
+			end
+			
+			if gangstate == 1 then -- mp5
+				if hasCharGotWeapon(ped, 29) or not autobind.GangLocker[2] then
+					gangstate = 2
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 1, nil)
+				gangstate = 2
+				sendGangCmd()
+				return false
+			end
+			if gangstate == 2 then -- deagle
+				if hasCharGotWeapon(ped, 24) or not autobind.GangLocker[3] then
+					gangstate = 3
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 2, nil)
+				gangstate = 3
+				sendGangCmd()
+				return false
+			end
+			if gangstate == 3 then -- ak47
+				if hasCharGotWeapon(ped, 30) or not autobind.GangLocker[4] then
+					gangstate = 4
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 3, nil)
+				gangstate = 4
+				sendGangCmd()
+				return false
+			end
+			if gangstate == 4 then -- m4
+				if hasCharGotWeapon(ped, 31) or not autobind.GangLocker[5] then
+					gangstate = 5
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 4, nil)
+				gangstate = 5
+				sendGangCmd()
+				return false
+			end
+			if gangstate == 5 then -- spas12
+				if hasCharGotWeapon(ped, 27) or not autobind.GangLocker[6] then
+					gangstate = 6
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 5, nil)
+				gangstate = 6
+				sendGangCmd()
+				return false
+			end
+			if gangstate == 6 then -- sniper
+				if hasCharGotWeapon(ped, 34) or not autobind.GangLocker[7] then
+					gangbool = false
+					gangstate = 0
+					gangcmd = 0
+					sampev.onShowDialog(id, style, title, button1, button2, text)
+					return false
+				end
+				sampSendDialogResponse(id, 1, 6, nil)
+				gangbool = false
+				gangstate = 0
+				gangcmd = 0
+				return false
+			end
+		end
+	end
+end
+
+function sampev.onTogglePlayerSpectating(state)
+    specstate = state
+end
+
+function dualswitch(title, key, checkbox)
+	imgui.Text(title)
+	if imgui.Checkbox("Dual Keybind##"..key, new.bool(autobind.Keybinds[key].Dual)) then
+		local key_split = split(autobind.Keybinds[key].Keybind, ",")
+		if autobind.Keybinds[key].Dual then
+			if string.contains(autobind.Keybinds[key].Keybind, ',', false) then
+				inuse_key = true
+				autobind.Keybinds[key] = {
+					Toggle = autobind.Keybinds[key].Toggle,
+					Dual = false, 
+					Keybind = tostring(key_split[2])
+				}
+				inuse_key = false
+			end
+		else
+			inuse_key = true
+			autobind.Keybinds[key] = {
+				Toggle = autobind.Keybinds[key].Toggle,
+				Dual = true, 
+				Keybind = tostring(VK_MENU)..','..tostring(key_split[1])
+			}
+			inuse_key = false
+		end
+	end
+	if imgui.Checkbox("Toggle Keybind##"..key, new.bool(autobind.Keybinds[key].Toggle)) and checkbox then
+		autobind.Keybinds[key].Toggle = not autobind.Keybinds[key].Toggle
+	end
+end
+
+function fontmove()
+	if fid and mposX and mposY and streamedplayers and menu[0] then
+		width_text, height_text = renderGetFontDrawTextLength(fid, streamedplayers), renderGetFontDrawHeight(fid)
+		if mposX >= autobind.streamedplayers.pos[1] - aligntext(fid, streamedplayers, autobind.streamedplayers.alignfont) and 
+		   mposX <= (autobind.streamedplayers.pos[1] - aligntext(fid, streamedplayers, autobind.streamedplayers.alignfont)) + width_text and 
+		   mposY >= autobind.streamedplayers.pos[2] and 
+		   mposY <= autobind.streamedplayers.pos[2] + height_text then
+			if isKeyJustPressed(VK_LBUTTON) and not inuse then 
+				inuse = true 
+				selected2 = true 
+				temp[5].x = mposX - autobind.streamedplayers.pos[1]
+				temp[5].y = mposY - autobind.streamedplayers.pos[2]
+			end
+		end
+		if selected2 then
+			if wasKeyReleased(VK_LBUTTON) then
+				inuse = false 
+				selected2 = false
+			else
+				autobind.streamedplayers.pos[1] = mposX - temp[5].x
+				autobind.streamedplayers.pos[2] = mposY - temp[5].y
+			end
+		end
+	end
+end
+
+function createfont()
+	flags, flagids = {}, {flag.BOLD,flag.ITALICS,flag.BORDER,flag.SHADOW}
+	for i = 1, 4 do 
+		flags[i] = autobind.streamedplayers.fontflag[i] and flagids[i] or 0 
+	end 
+	fid = renderCreateFont(autobind.streamedplayers.font, autobind.streamedplayers.fontsize, flags[1] + flags[2] + flags[3] + flags[4])
+end
+
+function aligntext(fid, value, align)
+	local l = renderGetFontDrawTextLength(fid, value) 
+	if align == 1 then 
+		return l
+	elseif align == 2 then 
+		return l / 2 
+	elseif align == 3 then 
+		return 0 
+	end
+end
+
+function playsound(id)
+	if autobind.audio.toggle[id] then
+		if doesFileExist(autobind.audio.paths[id]) then
+			sounds = loadAudioStream(autobind.audio.paths[id])
+			if sounds ~= nil then
+				setAudioStreamVolume(sounds, autobind.audio.volumes[id])
+				setAudioStreamState(sounds, 1)
+			end
+		else
+			sampAddChatMessage(string.format("Error: Sound does not exist \"%s\"", autobind.audio.paths[id]), -1)
+		end
+	end
+end
+
+function loadskinidsurl()
+	asyncHttpRequest('GET', autobind.skinsurl, nil,
+		function(response)
+			if response.text ~= nil then
+				for skinid in string.match(response.text, "<body>(.+)</body>").gmatch(response.text, "%d*") do
+					if string.len(skinid) > 0 then 
+						table.insert(skins, skinid)
+					end
+				end
+			end
+		end,
+		function(err)
+			sampAddChatMessage(string.format("{ABB2B9}[%s]{FFFFFF} %s", script.this.name, err), -1)
+		end
+	)
+end
+
+function skins_script()
+	for i = 0, 311 do
+		if not doesFileExist(skinspath ..'Skin_'.. i ..'.png') then
+			downloadUrlToFile(skins_url ..'Skin_'.. i ..'.png', skinspath ..'Skin_'.. i..'.png', function(id, status)
+				if status == dlstatus.STATUS_ENDDOWNLOADDATA then
+					sampAddChatMessage(string.format("{ABB2B9}[%s]{FFFFFF} Skin_%d.png Downloaded", script.this.name, i), -1)
+				end
+			end)
+		end
+	end
+end
+
+function sounds_script()
+	local sounds = {"sound1.mp3", "sound2.mp3", "sound3.mp3", "sound4.mp3", "sound5.mp3", "sound6.mp3", "sound7.mp3", "sound8.mp3", "roblox.mp3", "mw2.mp3", "bingbong.mp3"}
+	for k, v in pairs(sounds) do
+		if not doesFileExist(audiofolder .. v) then
+			downloadUrlToFile(sounds_url .. v, audiofolder .. v, function(id, status)
+				if status == dlstatus.STATUS_ENDDOWNLOADDATA then
+					sampAddChatMessage(string.format("{ABB2B9}[%s]{FFFFFF} %s Downloaded", script.this.name, v))
+				end
+			end)
+		end
+	end
+end
+
+function update_script(noupdatecheck, noerrorcheck)
+	asyncHttpRequest('GET', update_url, nil,
+		function(response)
+			if response.text ~= nil then
+				update_version = response.text:match("version: (.+)")
+				if update_version ~= nil then
+					if tonumber(update_version) > script_version then
+						sampAddChatMessage(string.format("{ABB2B9}[%s]{FFFFFF} New version found! The update is in progress..", script.this.name), -1)
+						downloadUrlToFile(script_url, script_path, function(id, status)
+							if status == dlstatus.STATUS_ENDDOWNLOADDATA then
+								sampAddChatMessage(string.format("{ABB2B9}[%s]{FFFFFF} The update was successful! Reloading the script now..", script.this.name), -1)
+								wait(500) 
+								thisScript():reload()
+							end
+						end)
+					else
+						if noupdatecheck then
+							sampAddChatMessage(string.format("{ABB2B9}[%s]{FFFFFF} No new version found..", script.this.name), -1)
+						end
+					end
+				end
+			end
+		end,
+		function(err)
+			if noerrorcheck then
+				sampAddChatMessage(string.format("{ABB2B9}[%s]{FFFFFF} %s", script.this.name, err), -1)
+			end
+		end
+	)
+end
+
+function autobind_blankIni()
+	autobind = {}
+	autobind_repairmissing()
+	autobind_saveIni()
+	isIniLoaded = true
+end
+
+function autobind_loadIni()
+	local f = io.open(autobind_cfg, "r")
+	if f then
+		autobind = decodeJson(f:read("*all"))
+		f:close()
+	end
+	autobind_repairmissing()
+	autobind_saveIni()
+	isIniLoaded = true
+end
+
+function autobind_saveIni()
+	if type(autobind) == "table" then
+		local f = io.open(autobind_cfg, "w")
+		f:close()
+		if f then
+			f = io.open(autobind_cfg, "r+")
+			f:write(encodeJson(autobind))
+			f:close()
+		end
+	end
+end
+
 function autobind_repairmissing()
+	if autobind.autosave == nil then 
+		autobind.autosave = true
+	end
+	if autobind.autoupdate == nil then 
+		autobind.autoupdate = true
+	end
 	if autobind.ddmode == nil then
 		autobind.ddmode = false
+	end
+	if autobind.capturf == nil then
+		autobind.capturf = false
+	end
+	if autobind.capture == nil then
+		autobind.capture = false
+	end
+	if autobind.autoacceptsex == nil then
+		autobind.autoacceptsex = false
+	end
+	if autobind.autoacceptrepair == nil then
+		autobind.autoacceptrepair = false
 	end
 	if autobind.disableaftercapping == nil then
 		autobind.disableaftercapping = false
@@ -3540,6 +4622,47 @@ function autobind_repairmissing()
 	end
 end
 
+function sendBMCmd()
+	lua_thread.create(function()
+		bmcmd = bmcmd + 1
+		if bmcmd ~= 3 then
+			wait(250)
+			sampSendChat("/bm")
+		else    
+			wait(1000)
+			bmcmd = 0
+			sampSendChat("/bm")
+		end
+	end)
+end
+
+function sendLockerCmd()
+	lua_thread.create(function()
+		lockercmd = lockercmd + 1
+		if lockercmd ~= 3 then
+			wait(250)
+			sampSendChat("/locker")
+		else    
+			wait(1000)
+			lockercmd = 0
+			sampSendChat("/locker")
+		end
+	end)
+end
+
+function sendGangCmd()
+	lua_thread.create(function()
+		gangcmd = gangcmd + 1
+		if gangcmd ~= 3 then
+			wait(250)
+			sampSendChat("/glocker")
+		else    
+			wait(1000)
+			gangcmd = 0
+			sampSendChat("/glocker")
+		end
+	end)
+end
 
 function string.contains(str, matchstr, matchorfind)
 	if matchorfind then
@@ -3572,6 +4695,56 @@ function scanGameFolder(path, tables)
         end
     end
     return tables
+end
+
+function keychange(name)
+	if not autobind.Keybinds[name].Dual then
+		if not inuse_key then
+			if imgui.Button(changekey[name] and 'Press any key' or vk.id_to_name(tonumber(autobind.Keybinds[name].Keybind))..'##'..name) then
+				changekey[name] = true
+				lua_thread.create(function()
+					while changekey[name] do wait(0)
+						local keydown, result = getDownKeys()
+						if result then
+							autobind.Keybinds[name].Keybind = string.format("%s", keydown)
+							changekey[name] = false
+						end
+					end
+				end)
+			end
+		end
+	else
+		if not inuse_key then
+			if autobind.Keybinds[name].Keybind:find(",") then
+				local key_split = split(autobind.Keybinds[name].Keybind, ",")
+				if imgui.Button(changekey[name] and 'Press any key' or vk.id_to_name(tonumber(key_split[1]))..'##1'..name) then
+					changekey[name] = true
+					lua_thread.create(function()
+						while changekey[name] do wait(0)
+							local keydown, result = getDownKeys()
+							if result then
+								autobind.Keybinds[name].Keybind = string.format("%s,%s", keydown, key_split[2])
+								changekey[name] = false
+							end
+						end
+					end)
+				end
+				imgui.SameLine()
+				if imgui.Button(changekey2[name] and 'Press any key' or vk.id_to_name(tonumber(key_split[2]))..'##2'..name) then
+					changekey2[name] = true
+					lua_thread.create(function()
+						while changekey2[name] do wait(0)
+							local keydown, result = getDownKeys()
+							if result then
+								autobind.Keybinds[name].Keybind = string.format("%s,%s", key_split[1], keydown)
+								changekey2[name] = false
+							end
+						end
+					end)
+				end
+			end
+		end
+	end
 end
 
 function getClosestPlayerId(maxdist, type)
@@ -3635,4 +4808,512 @@ function has_value(tab, val)
     end
 
     return false
+end
+
+function emul_rpc(hook, parameters)
+    local bs_io = require 'samp.events.bitstream_io'
+    local handler = require 'samp.events.handlers'
+    local extra_types = require 'samp.events.extra_types'
+    local hooks = {
+
+        --[[ Outgoing rpcs
+        ['onSendEnterVehicle'] = { 'int16', 'bool8', 26 },
+        ['onSendClickPlayer'] = { 'int16', 'int8', 23 },
+        ['onSendClientJoin'] = { 'int32', 'int8', 'string8', 'int32', 'string8', 'string8', 'int32', 25 },
+        ['onSendEnterEditObject'] = { 'int32', 'int16', 'int32', 'vector3d', 27 },
+        ['onSendCommand'] = { 'string32', 50 },
+        ['onSendSpawn'] = { 52 },
+        ['onSendDeathNotification'] = { 'int8', 'int16', 53 },
+        ['onSendDialogResponse'] = { 'int16', 'int8', 'int16', 'string8', 62 },
+        ['onSendClickTextDraw'] = { 'int16', 83 },
+        ['onSendVehicleTuningNotification'] = { 'int32', 'int32', 'int32', 'int32', 96 },
+        ['onSendChat'] = { 'string8', 101 },
+        ['onSendClientCheckResponse'] = { 'int8', 'int32', 'int8', 103 },
+        ['onSendVehicleDamaged'] = { 'int16', 'int32', 'int32', 'int8', 'int8', 106 },
+        ['onSendEditAttachedObject'] = { 'int32', 'int32', 'int32', 'int32', 'vector3d', 'vector3d', 'vector3d', 'int32', 'int32', 116 },
+        ['onSendEditObject'] = { 'bool', 'int16', 'int32', 'vector3d', 'vector3d', 117 },
+        ['onSendInteriorChangeNotification'] = { 'int8', 118 },
+        ['onSendMapMarker'] = { 'vector3d', 119 },
+        ['onSendRequestClass'] = { 'int32', 128 },
+        ['onSendRequestSpawn'] = { 129 },
+        ['onSendPickedUpPickup'] = { 'int32', 131 },
+        ['onSendMenuSelect'] = { 'int8', 132 },
+        ['onSendVehicleDestroyed'] = { 'int16', 136 },
+        ['onSendQuitMenu'] = { 140 },
+        ['onSendExitVehicle'] = { 'int16', 154 },
+        ['onSendUpdateScoresAndPings'] = { 155 },
+        ['onSendGiveDamage'] = { 'int16', 'float', 'int32', 'int32', 115 },
+        ['onSendTakeDamage'] = { 'int16', 'float', 'int32', 'int32', 115 },]]
+
+        -- Incoming rpcs
+        ['onInitGame'] = { 139 },
+        ['onPlayerJoin'] = { 'int16', 'int32', 'bool8', 'string8', 137 },
+        ['onPlayerQuit'] = { 'int16', 'int8', 138 },
+        ['onRequestClassResponse'] = { 'bool8', 'int8', 'int32', 'int8', 'vector3d', 'float', 'Int32Array3', 'Int32Array3', 128 },
+        ['onRequestSpawnResponse'] = { 'bool8', 129 },
+        ['onSetPlayerName'] = { 'int16', 'string8', 'bool8', 11 },
+        ['onSetPlayerPos'] = { 'vector3d', 12 },
+        ['onSetPlayerPosFindZ'] = { 'vector3d', 13 },
+        ['onSetPlayerHealth'] = { 'float', 14 },
+        ['onTogglePlayerControllable'] = { 'bool8', 15 },
+        ['onPlaySound'] = { 'int32', 'vector3d', 16 },
+        ['onSetWorldBounds'] = { 'float', 'float', 'float', 'float', 17 },
+        ['onGivePlayerMoney'] = { 'int32', 18 },
+        ['onSetPlayerFacingAngle'] = { 'float', 19 },
+        --['onResetPlayerMoney'] = { 20 },
+        --['onResetPlayerWeapons'] = { 21 },
+        ['onGivePlayerWeapon'] = { 'int32', 'int32', 22 },
+        --['onCancelEdit'] = { 28 },
+        ['onSetPlayerTime'] = { 'int8', 'int8', 29 },
+        ['onSetToggleClock'] = { 'bool8', 30 },
+        ['onPlayerStreamIn'] = { 'int16', 'int8', 'int32', 'vector3d', 'float', 'int32', 'int8', 32 },
+        ['onSetShopName'] = { 'string256', 33 },
+        ['onSetPlayerSkillLevel'] = { 'int16', 'int32', 'int16', 34 },
+        ['onSetPlayerDrunk'] = { 'int32', 35 },
+        ['onCreate3DText'] = { 'int16', 'int32', 'vector3d', 'float', 'bool8', 'int16', 'int16', 'encodedString4096', 36 },
+        --['onDisableCheckpoint'] = { 37 },
+        ['onSetRaceCheckpoint'] = { 'int8', 'vector3d', 'vector3d', 'float', 38 },
+        --['onDisableRaceCheckpoint'] = { 39 },
+        --['onGamemodeRestart'] = { 40 },
+        ['onPlayAudioStream'] = { 'string8', 'vector3d', 'float', 'bool8', 41 },
+        --['onStopAudioStream'] = { 42 },
+        ['onRemoveBuilding'] = { 'int32', 'vector3d', 'float', 43 },
+        ['onCreateObject'] = { 44 },
+        ['onSetObjectPosition'] = { 'int16', 'vector3d', 45 },
+        ['onSetObjectRotation'] = { 'int16', 'vector3d', 46 },
+        ['onDestroyObject'] = { 'int16', 47 },
+        ['onPlayerDeathNotification'] = { 'int16', 'int16', 'int8', 55 },
+        ['onSetMapIcon'] = { 'int8', 'vector3d', 'int8', 'int32', 'int8', 56 },
+        ['onRemoveVehicleComponent'] = { 'int16', 'int16', 57 },
+        ['onRemove3DTextLabel'] = { 'int16', 58 },
+        ['onPlayerChatBubble'] = { 'int16', 'int32', 'float', 'int32', 'string8', 59 },
+        ['onUpdateGlobalTimer'] = { 'int32', 60 },
+        ['onShowDialog'] = { 'int16', 'int8', 'string8', 'string8', 'string8', 'encodedString4096', 61 },
+        ['onDestroyPickup'] = { 'int32', 63 },
+        ['onLinkVehicleToInterior'] = { 'int16', 'int8', 65 },
+        ['onSetPlayerArmour'] = { 'float', 66 },
+        ['onSetPlayerArmedWeapon'] = { 'int32', 67 },
+        ['onSetSpawnInfo'] = { 'int8', 'int32', 'int8', 'vector3d', 'float', 'Int32Array3', 'Int32Array3', 68 },
+        ['onSetPlayerTeam'] = { 'int16', 'int8', 69 },
+        ['onPutPlayerInVehicle'] = { 'int16', 'int8', 70 },
+        --['onRemovePlayerFromVehicle'] = { 71 },
+        ['onSetPlayerColor'] = { 'int16', 'int32', 72 },
+        ['onDisplayGameText'] = { 'int32', 'int32', 'string32', 73 },
+        --['onForceClassSelection'] = { 74 },
+        ['onAttachObjectToPlayer'] = { 'int16', 'int16', 'vector3d', 'vector3d', 75 },
+        ['onInitMenu'] = { 76 },
+        ['onShowMenu'] = { 'int8', 77 },
+        ['onHideMenu'] = { 'int8', 78 },
+        ['onCreateExplosion'] = { 'vector3d', 'int32', 'float', 79 },
+        ['onShowPlayerNameTag'] = { 'int16', 'bool8', 80 },
+        ['onAttachCameraToObject'] = { 'int16', 81 },
+        ['onInterpolateCamera'] = { 'bool', 'vector3d', 'vector3d', 'int32', 'int8', 82 },
+        ['onGangZoneStopFlash'] = { 'int16', 85 },
+        ['onApplyPlayerAnimation'] = { 'int16', 'string8', 'string8', 'bool', 'bool', 'bool', 'bool', 'int32', 86 },
+        ['onClearPlayerAnimation'] = { 'int16', 87 },
+        ['onSetPlayerSpecialAction'] = { 'int8', 88 },
+        ['onSetPlayerFightingStyle'] = { 'int16', 'int8', 89 },
+        ['onSetPlayerVelocity'] = { 'vector3d', 90 },
+        ['onSetVehicleVelocity'] = { 'bool8', 'vector3d', 91 },
+        ['onServerMessage'] = { 'int32', 'string32', 93 },
+        ['onSetWorldTime'] = { 'int8', 94 },
+        ['onCreatePickup'] = { 'int32', 'int32', 'int32', 'vector3d', 95 },
+        ['onMoveObject'] = { 'int16', 'vector3d', 'vector3d', 'float', 'vector3d', 99 },
+        ['onEnableStuntBonus'] = { 'bool', 104 },
+        ['onTextDrawSetString'] = { 'int16', 'string16', 105 },
+        ['onSetCheckpoint'] = { 'vector3d', 'float', 107 },
+        ['onCreateGangZone'] = { 'int16', 'vector2d', 'vector2d', 'int32', 108 },
+        ['onPlayCrimeReport'] = { 'int16', 'int32', 'int32', 'int32', 'int32', 'vector3d', 112 },
+        ['onGangZoneDestroy'] = { 'int16', 120 },
+        ['onGangZoneFlash'] = { 'int16', 'int32', 121 },
+        ['onStopObject'] = { 'int16', 122 },
+        ['onSetVehicleNumberPlate'] = { 'int16', 'string8', 123 },
+        ['onTogglePlayerSpectating'] = { 'bool32', 124 },
+        ['onSpectatePlayer'] = { 'int16', 'int8', 126 },
+        ['onSpectateVehicle'] = { 'int16', 'int8', 127 },
+        ['onShowTextDraw'] = { 134 },
+        ['onSetPlayerWantedLevel'] = { 'int8', 133 },
+        ['onTextDrawHide'] = { 'int16', 135 },
+        ['onRemoveMapIcon'] = { 'int8', 144 },
+        ['onSetWeaponAmmo'] = { 'int8', 'int16', 145 },
+        ['onSetGravity'] = { 'float', 146 },
+        ['onSetVehicleHealth'] = { 'int16', 'float', 147 },
+        ['onAttachTrailerToVehicle'] = { 'int16', 'int16', 148 },
+        ['onDetachTrailerFromVehicle'] = { 'int16', 149 },
+        ['onSetWeather'] = { 'int8', 152 },
+        ['onSetPlayerSkin'] = { 'int32', 'int32', 153 },
+        ['onSetInterior'] = { 'int8', 156 },
+        ['onSetCameraPosition'] = { 'vector3d', 157 },
+        ['onSetCameraLookAt'] = { 'vector3d', 'int8', 158 },
+        ['onSetVehiclePosition'] = { 'int16', 'vector3d', 159 },
+        ['onSetVehicleAngle'] = { 'int16', 'float', 160 },
+        ['onSetVehicleParams'] = { 'int16', 'int16', 'bool8', 161 },
+        --['onSetCameraBehind'] = { 162 },
+        ['onChatMessage'] = { 'int16', 'string8', 101 },
+        ['onConnectionRejected'] = { 'int8', 130 },
+        ['onPlayerStreamOut'] = { 'int16', 163 },
+        ['onVehicleStreamIn'] = { 164 },
+        ['onVehicleStreamOut'] = { 'int16', 165 },
+        ['onPlayerDeath'] = { 'int16', 166 },
+        ['onPlayerEnterVehicle'] = { 'int16', 'int16', 'bool8', 26 },
+        ['onUpdateScoresAndPings'] = { 'PlayerScorePingMap', 155 },
+        ['onSetObjectMaterial'] = { 84 },
+        ['onSetObjectMaterialText'] = { 84 },
+        ['onSetVehicleParamsEx'] = { 'int16', 'int8', 'int8', 'int8', 'int8', 'int8', 'int8', 'int8', 'int8', 'int8', 'int8', 'int8', 'int8', 'int8', 'int8', 'int8', 'int8', 24 },
+        ['onSetPlayerAttachedObject'] = { 'int16', 'int32', 'bool', 'int32', 'int32', 'vector3d', 'vector3d', 'vector3d', 'int32', 'int32', 113 }
+
+    }
+    local handler_hook = {
+        ['onInitGame'] = true,
+        ['onCreateObject'] = true,
+        ['onInitMenu'] = true,
+        ['onShowTextDraw'] = true,
+        ['onVehicleStreamIn'] = true,
+        ['onSetObjectMaterial'] = true,
+        ['onSetObjectMaterialText'] = true
+    }
+    local extra = {
+        ['PlayerScorePingMap'] = true,
+        ['Int32Array3'] = true
+    }
+    local hook_table = hooks[hook]
+    if hook_table then
+        local bs = raknetNewBitStream()
+        if not handler_hook[hook] then
+            local max = #hook_table-1
+            if max > 0 then
+                for i = 1, max do
+                    local p = hook_table[i]
+                    if extra[p] then extra_types[p]['write'](bs, parameters[i])
+                    else bs_io[p]['write'](bs, parameters[i]) end
+                end
+            end
+        else
+            if hook == 'onInitGame' then handler.on_init_game_writer(bs, parameters)
+            elseif hook == 'onCreateObject' then handler.on_create_object_writer(bs, parameters)
+            elseif hook == 'onInitMenu' then handler.on_init_menu_writer(bs, parameters)
+            elseif hook == 'onShowTextDraw' then handler.on_show_textdraw_writer(bs, parameters)
+            elseif hook == 'onVehicleStreamIn' then handler.on_vehicle_stream_in_writer(bs, parameters)
+            elseif hook == 'onSetObjectMaterial' then handler.on_set_object_material_writer(bs, parameters, 1)
+            elseif hook == 'onSetObjectMaterialText' then handler.on_set_object_material_writer(bs, parameters, 2) end
+        end
+        raknetEmulRpcReceiveBitStream(hook_table[#hook_table], bs)
+        raknetDeleteBitStream(bs)
+    end
+end
+
+function imgui.AnimProgressBar(label, int, int2, duration, size, color, color2)
+	local function bringFloatTo(from, to, start_time, duration)
+		local timer = os.clock() - start_time
+		if timer >= 0.00 and timer <= duration then; local count = timer / (duration / int2); return from + (count * (to - from) / int2),timer,false
+		end; return (timer > duration) and to or from,timer,true
+	end
+    if int > int2 then imgui.TextColored(imgui.ImVec4(1,0,0,0.7),'error func imgui.AnimProgressBar(*),int > 100') return end
+    if IMGUI_ANIM_PROGRESS_BAR == nil then IMGUI_ANIM_PROGRESS_BAR = {} end
+    if IMGUI_ANIM_PROGRESS_BAR ~= nil and IMGUI_ANIM_PROGRESS_BAR[label] == nil then
+        IMGUI_ANIM_PROGRESS_BAR[label] = {int = (int or 0),clock = 0}
+    end
+    local mf = math.floor
+    local p = IMGUI_ANIM_PROGRESS_BAR[label];
+    if (p['int']) ~= (int) then
+        if p.clock == 0 then; p.clock = os.clock(); end
+        local d = {bringFloatTo(p.int,int,p.clock,(duration or 2.25))}
+        if d[1] > int  then
+            if ((d[1])-0.01) < (int) then; p.clock = 0; p.int = mf(d[1]-0.01); end
+        elseif d[1] < int then
+            if ((d[1])+0.01) > (int) then; p.clock = 0; p.int = mf(d[1]+0.01); end
+        end
+        p.int = d[1];
+    end
+	local clr = imgui.Col
+    imgui.PushStyleColor(clr.Text, imgui.ImVec4(0,0,0,0))
+    imgui.PushStyleColor(clr.FrameBg, color) -- background color progress bar
+    imgui.PushStyleColor(clr.PlotHistogram, color2) -- fill color progress bar
+    imgui.ProgressBar(p.int / int2,size or imgui.ImVec2(-1,15))
+    imgui.PopStyleColor(3)
+end
+
+function split(str, delim, plain) -- bh FYP
+   local tokens, pos, plain = {}, 1, not (plain == false) --[[ delimiter is plain text by default ]]
+   repeat
+       local npos, epos = string.find(str, delim, pos, plain)
+       table.insert(tokens, string.sub(str, pos, npos and npos - 1))
+       pos = epos and epos + 1
+   until not pos
+   return tokens
+end
+
+function setGameKeyUpDown(key, value, delay)
+	setGameKeyState(key, value) 
+	wait(delay) 
+	setGameKeyState(key, 0)
+end
+
+function disp_time(time)
+  local remaining = time % 86400
+  local minutes = math.floor(remaining/60)
+  remaining = remaining % 60
+  local seconds = remaining
+  if (minutes < 10) then
+    minutes = "0" .. tostring(minutes)
+  end
+  if (seconds < 10) then
+    seconds = "0" .. tostring(seconds)
+  end
+  return tonumber(minutes), tonumber(seconds)
+end
+
+function imgui.CustomButton(name, color, colorHovered, colorActive, size)
+    local clr = imgui.Col
+    imgui.PushStyleColor(clr.Button, color)
+    imgui.PushStyleColor(clr.ButtonHovered, colorHovered)
+    imgui.PushStyleColor(clr.ButtonActive, colorActive)
+    if not size then size = imgui.ImVec2(0, 0) end
+    local result = imgui.Button(name, size)
+    imgui.PopStyleColor(3)
+    return result
+end
+
+function getTarget(str)
+	if str ~= nil then
+		local maxplayerid, players = sampGetMaxPlayerId(false), {}
+		for i = 0, maxplayerid do
+			if sampIsPlayerConnected(i) then
+				players[i] = sampGetPlayerNickname(i)
+			end
+		end
+		for k, v in pairs(players) do
+			if v:lower():find("^"..str:lower()) or string.match(k, str) then 
+				target = split((players[k] .. " " .. k), " ")
+				playername = players[k]
+				return true, target[2], playername
+			elseif k == maxplayerid then
+				return false
+			end
+		end
+	end
+end
+
+function sound_dropdownmenu(i)
+	if imgui.Checkbox('Toggle##'..i, new.bool(autobind.audio.toggle[i])) then 
+		autobind.audio.toggle[i] = not autobind.audio.toggle[i]
+	end  
+	imgui.PushItemWidth(150)
+	if imgui.BeginCombo("##sounds2"..i, autobind.audio.sounds[i]) then
+		for k, v in pairs(paths) do
+			k = tostring(k)
+			if k:match(".+%.mp3") or k:match(".+%.mp4") or k:match(".+%.wav") or k:match(".+%.m4a") or k:match(".+%.flac") or k:match(".+%.m4r") or k:match(".+%.ogg") or k:match(".+%.mp2") or k:match(".+%.amr") or k:match(".+%.wma") or k:match(".+%.aac") or k:match(".+%.aiff") then
+				if imgui.Selectable(u8(k), true) then 
+					autobind.audio.sounds[i] = k
+					autobind.audio.paths[i] = v
+					playsound(i)
+				end
+			end
+		end
+		imgui.EndCombo()
+	end
+	imgui.PopItemWidth()
+	
+	imgui.PushItemWidth(150)
+	local volume = new.float[1](autobind.audio.volumes[i])
+	if imgui.SliderFloat(u8'##Volume##' .. i, volume, 0, 1) then
+		autobind.audio.volumes[i] = volume[0]
+	end
+	imgui.PopItemWidth()
+	
+	if imgui.IsItemHovered() then
+		imgui.SetTooltip('Volume Control')
+	end
+end
+
+function sampGetPlayerIdByNickname(nick)
+	nick = tostring(nick)
+	local _, myid = sampGetPlayerIdByCharHandle(ped)
+	if nick == sampGetPlayerNickname(myid) then return myid end
+	for i = 0, sampGetMaxPlayerId(false) do
+		if sampIsPlayerConnected(i) and sampGetPlayerNickname(i) == nick then
+			return i
+		end
+	end
+end
+
+function getDownKeys()
+    local keyslist = nil
+    local bool = false
+    for k, v in pairs(vk) do
+        if isKeyDown(v) then
+            keyslist = v
+            bool = true
+        end
+    end
+    return keyslist, bool
+end
+
+function vestmodename(vestmode)
+	if vestmode == 0 then
+		return 'Families'
+	elseif vestmode == 1 then
+		return 'Factions'
+	elseif vestmode == 2 then
+		return 'Everyone'
+	elseif vestmode == 3 then
+		return 'Names'
+	elseif vestmode == 4 then
+		return 'Skins'
+	end
+end
+
+function hex2rgba(rgba)
+	local a = bit.band(bit.rshift(rgba, 24),	0xFF)
+	local r = bit.band(bit.rshift(rgba, 16),	0xFF)
+	local g = bit.band(bit.rshift(rgba, 8),		0xFF)
+	local b = bit.band(rgba, 0xFF)
+	return r / 255, g / 255, b / 255, a / 255
+end
+
+function hex2rgba_int(rgba)
+	local a = bit.band(bit.rshift(rgba, 24),	0xFF)
+	local r = bit.band(bit.rshift(rgba, 16),	0xFF)
+	local g = bit.band(bit.rshift(rgba, 8),		0xFF)
+	local b = bit.band(rgba, 0xFF)
+	return r, g, b, a
+end
+
+function hex2rgb(rgba)
+	local a = bit.band(bit.rshift(rgba, 24),	0xFF)
+	local r = bit.band(bit.rshift(rgba, 16),	0xFF)
+	local g = bit.band(bit.rshift(rgba, 8),		0xFF)
+	local b = bit.band(rgba, 0xFF)
+	return r / 255, g / 255, b / 255
+end
+
+function hex2rgb_int(rgba)
+	local a = bit.band(bit.rshift(rgba, 24),	0xFF)
+	local r = bit.band(bit.rshift(rgba, 16),	0xFF)
+	local g = bit.band(bit.rshift(rgba, 8),		0xFF)
+	local b = bit.band(rgba, 0xFF)
+	return r, g, b
+end
+
+function join_argb(a, r, g, b)
+	local argb = b
+	argb = bit.bor(argb, bit.lshift(g, 8))  -- g
+	argb = bit.bor(argb, bit.lshift(r, 16)) -- r
+	argb = bit.bor(argb, bit.lshift(a, 24)) -- a
+	return argb
+end
+
+function join_argb_int(a, r, g, b)
+	local argb = b * 255
+    argb = bit.bor(argb, bit.lshift(g * 255, 8))
+    argb = bit.bor(argb, bit.lshift(r * 255, 16))
+    argb = bit.bor(argb, bit.lshift(a, 24))
+    return argb
+end
+
+function asyncHttpRequest(method, url, args, resolve, reject)
+   local request_thread = effil.thread(function (method, url, args)
+      local requests = require 'requests'
+      local result, response = pcall(requests.request, method, url, args)
+      if result then
+         response.json, response.xml = nil, nil
+         return true, response
+      else
+         return false, response
+      end
+   end)(method, url, args)
+   -- Если запрос без функций обработки ответа и ошибок.
+   if not resolve then resolve = function() end end
+   if not reject then reject = function() end end
+   -- Проверка выполнения потока
+   lua_thread.create(function()
+      local runner = request_thread
+      while true do
+         local status, err = runner:status()
+         if not err then
+            if status == 'completed' then
+               local result, response = runner:get()
+               if result then
+                  resolve(response)
+               else
+                  reject(response)
+               end
+               return
+            elseif status == 'canceled' then
+               return reject(status)
+            end
+         else
+            return reject(err)
+         end
+         wait(0)
+      end
+   end)
+end
+
+
+function apply_custom_style()
+	imgui.SwitchContext()
+	local ImVec4 = imgui.ImVec4
+	local ImVec2 = imgui.ImVec2
+	local style = imgui.GetStyle()
+	style.WindowRounding = 0
+	style.WindowPadding = ImVec2(8, 8)
+	style.WindowTitleAlign = ImVec2(0.5, 0.5)
+	style.FrameRounding = 0
+	style.ItemSpacing = ImVec2(8, 4)
+	style.ScrollbarSize = 10
+	style.ScrollbarRounding = 3
+	style.GrabMinSize = 10
+	style.GrabRounding = 0
+	style.Alpha = 1
+	style.FramePadding = ImVec2(4, 3)
+	style.ItemInnerSpacing = ImVec2(4, 4)
+	style.TouchExtraPadding = ImVec2(0, 0)
+	style.IndentSpacing = 21
+	style.ColumnsMinSpacing = 6
+	style.ButtonTextAlign = ImVec2(0.5, 0.5)
+	style.DisplayWindowPadding = ImVec2(0, 0)
+	style.DisplaySafeAreaPadding = ImVec2(4, 4)
+	style.AntiAliasedLines = true
+	style.CurveTessellationTol = 1.25
+	
+	local colors = style.Colors
+	local clr = imgui.Col
+	colors[clr.FrameBg]                = ImVec4(mainc.x, mainc.y, mainc.z, 0.54)
+    colors[clr.FrameBgHovered]         = ImVec4(mainc.x, mainc.y, mainc.z, 0.40)
+    colors[clr.FrameBgActive]          = ImVec4(mainc.x, mainc.y, mainc.z, 0.67)
+    colors[clr.TitleBg]                = ImVec4(mainc.x, mainc.y, mainc.z, 0.6)
+    colors[clr.TitleBgActive]          = ImVec4(mainc.x, mainc.y, mainc.z, 0.8)
+    colors[clr.TitleBgCollapsed]       = ImVec4(mainc.x, mainc.y, mainc.z, 0.40)
+	colors[clr.CheckMark]              = ImVec4(mainc.x + 0.13, mainc.y + 0.13, mainc.z + 0.13, 0.8)
+	colors[clr.SliderGrab]             = ImVec4(mainc.x, mainc.y, mainc.z, 1.00)
+	colors[clr.SliderGrabActive]       = ImVec4(mainc.x, mainc.y, mainc.z, 1.00)
+	colors[clr.Button]                 = ImVec4(mainc.x, mainc.y, mainc.z, 0.40)
+	colors[clr.ButtonHovered]          = ImVec4(mainc.x, mainc.y, mainc.z, 0.63)
+	colors[clr.ButtonActive]           = ImVec4(mainc.x, mainc.y, mainc.z, 0.8)
+	colors[clr.Header]                 = ImVec4(mainc.x, mainc.y, mainc.z, 0.40)
+	colors[clr.HeaderHovered]          = ImVec4(mainc.x, mainc.y, mainc.z, 0.63)
+	colors[clr.HeaderActive]           = ImVec4(mainc.x, mainc.y, mainc.z, 0.8)
+	colors[clr.Separator]              = colors[clr.Border]
+	colors[clr.SeparatorHovered]       = ImVec4(0.75, 0.10, 0.10, 0.78)
+	colors[clr.SeparatorActive]        = ImVec4(0.75, 0.10, 0.10, 1.00)
+	colors[clr.ResizeGrip]             = ImVec4(mainc.x, mainc.y, mainc.z, 0.8)
+    colors[clr.ResizeGripHovered]      = ImVec4(mainc.x, mainc.y, mainc.z, 0.63)
+    colors[clr.ResizeGripActive]       = ImVec4(mainc.x, mainc.y, mainc.z, 0.8)
+	colors[clr.TextSelectedBg]         = ImVec4(0.98, 0.26, 0.26, 0.35)
+	colors[clr.Text]                   = ImVec4(1.00, 1.00, 1.00, 1.00)
+	colors[clr.TextDisabled]           = ImVec4(0.50, 0.50, 0.50, 1.00)
+	colors[clr.WindowBg]               = ImVec4(0.06, 0.06, 0.06, 0.94)
+	colors[clr.PopupBg]                = ImVec4(0.08, 0.08, 0.08, 0.94)
+	colors[clr.Border]                 = ImVec4(0.06, 0.06, 0.06, 0.00)
+	colors[clr.BorderShadow]           = ImVec4(0.00, 0.00, 0.00, 0.00)
+	colors[clr.MenuBarBg]              = ImVec4(0.14, 0.14, 0.14, 1.00)
+	colors[clr.ScrollbarBg]            = ImVec4(0.02, 0.02, 0.02, 0.53)
+	colors[clr.ScrollbarGrab]          = ImVec4(mainc.x, mainc.y, mainc.z, 0.8)
+	colors[clr.ScrollbarGrabHovered]   = ImVec4(0.41, 0.41, 0.41, 1.00)
+	colors[clr.ScrollbarGrabActive]    = ImVec4(0.51, 0.51, 0.51, 1.00)
+	colors[clr.PlotLines]              = ImVec4(0.61, 0.61, 0.61, 1.00)
+	colors[clr.PlotLinesHovered]       = ImVec4(1.00, 0.43, 0.35, 1.00)
+	colors[clr.PlotHistogram]          = ImVec4(0.90, 0.70, 0.00, 1.00)
+	colors[clr.PlotHistogramHovered]   = ImVec4(1.00, 0.60, 0.00, 1.00)
 end
